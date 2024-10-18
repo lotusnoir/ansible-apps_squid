@@ -38,6 +38,9 @@ connect_timeout {{ squid_connect_timeout }}
 {% if squid_read_timeout is defined and squid_read_timeout | length > 0 %}
 read_timeout {{ squid_read_timeout }}
 {% endif %}
+{% if squid_forwarded_for is defined and squid_forwarded_for | length > 0 %}
+forwarded_for {{ squid_forwarded_for }}
+{% endif %}
 
 #############################################################
 # DEFINE ACLS
