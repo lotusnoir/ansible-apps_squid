@@ -1,4 +1,9 @@
 ---
+- name: "Reload daemon"
+  ansible.builtin.service:
+    daemon_reload: true
+  changed_when: false
+
 - name: "Test squid configuration"
   ansible.builtin.command: squid -k parse
   changed_when: false

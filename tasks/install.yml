@@ -24,19 +24,36 @@
         state: directory
         mode: '0755'
 
-    - name: "Change ulimit for root"
-      community.general.pam_limits:
-        domain: root
-        limit_type: '-'
-        limit_item: nofile
-        value: "{{ squid_max_filedescriptors }}"
+    - name: "Create systemd override directory for squid"
+      ansible.builtin.file:
+        path: /etc/systemd/system/squid.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
 
-    - name: "Change ulimit for all"
-      community.general.pam_limits:
-        domain: '*'
-        limit_type: '-'
-        limit_item: nofile
-        value: "{{ squid_max_filedescriptors }}"
+- name: "Set OS-level nofile limits for squid user"
+  ansible.builtin.copy:
+    dest: /etc/security/limits.d/squid.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      squid soft nofile {{ squid_max_filedescriptors }}
+      squid hard nofile {{ squid_max_filedescriptors }}
+
+- name: "Set file descriptor limit for Squid"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/squid.service.d/override.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Service]
+      LimitNOFILE={{ squid_max_filedescriptors }}
+  notify:
+    - "Reload daemon"
+    - "Restart squid"
 
 - name: "Configure squid.conf"
   ansible.builtin.template:
