@@ -17,6 +17,15 @@ cache_mem {{ squid_cache_mem }}
 {% if squid_memory_pools is defined and squid_memory_pools | length > 0 %}
 memory_pools {{ squid_memory_pools }}
 {% endif %}
+{% if squid_workers is defined %}
+workers {{ squid_workers }}
+{% endif %}
+{% if squid_maximum_object_size_in_memory is defined and squid_maximum_object_size_in_memory | length > 0 %}
+maximum_object_size_in_memory {{ squid_maximum_object_size_in_memory }}
+{% endif %}
+{% if squid_maximum_object_size is defined and squid_maximum_object_size | length > 0 %}
+maximum_object_size {{ squid_maximum_object_size }}
+{% endif %}
 
 # HTTP and SSL settings
 httpd_suppress_version_string {{ squid_httpd_suppress_version_string }}
@@ -29,14 +38,17 @@ server_persistent_connections {{ squid_server_persistent_connections }}
 {% if squid_connect_timeout is defined and squid_connect_timeout | length > 0 %}
 connect_timeout {{ squid_connect_timeout }}
 {% endif %}
+{% if squid_request_timeout is defined and squid_request_timeout | length > 0 %}
+request_timeout {{ squid_request_timeout }}
+{% endif %}
 {% if squid_read_timeout is defined and squid_read_timeout | length > 0 %}
 read_timeout {{ squid_read_timeout }}
 {% endif %}
+{% if squid_client_lifetime is defined and squid_client_lifetime | length > 0 %}
+client_lifetime {{ squid_client_lifetime }}
+{% endif %}
 
 # DNS
-{% if squid_dns_v4_first is defined and squid_dns_v4_first | length > 0 %}
-dns_v4_first {{ squid_dns_v4_first }}
-{% endif %}
 {% if squid_dns_nameservers is defined and squid_dns_nameservers | length > 0 %}
 dns_nameservers {{ squid_dns_nameservers }}
 {% endif %}
@@ -79,12 +91,6 @@ deny_info {{ squid_deny_info }}
 #############################################################
 # DEFINE CACHE
 
-{% if squid_maximum_object_size_in_memory is defined and squid_maximum_object_size_in_memory | length > 0 %}
-maximum_object_size_in_memory {{ squid_maximum_object_size_in_memory }}
-{% endif %}
-{% if squid_maximum_object_size is defined and squid_maximum_object_size | length > 0 %}
-maximum_object_size {{ squid_maximum_object_size }}
-{% endif %}
 cache_dir {{ squid_cache_dir }}
 {% if squid_cache_replacement_policy is defined and squid_cache_replacement_policy | length > 0 %}
 cache_replacement_policy {{ squid_cache_replacement_policy }}
