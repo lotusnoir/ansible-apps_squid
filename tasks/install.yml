@@ -55,6 +55,19 @@
     - "Reload daemon"
     - "Restart squid"
 
+- name: "Configure LDAP secret file"
+  ansible.builtin.copy:
+    dest: "/etc/squid/ldap.secret"
+    content: "{{ squid_auth_param_secret }}"
+    owner: proxy
+    group: proxy
+    mode: '0600'
+  when:
+    - squid_auth_param_secret is defined and squid_auth_param_secret | length > 0
+  notify:
+    - "Test squid configuration"
+    - "Restart squid"
+
 - name: "Configure squid.conf"
   ansible.builtin.template:
     src: "squid.conf.j2"

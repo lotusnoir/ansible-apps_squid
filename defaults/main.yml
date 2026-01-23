@@ -27,22 +27,47 @@ squid_positive_dns_ttl: "8 hours"
 squid_negative_ttl: "4 minutes"
 squid_forwarded_for: "on"
 
+### auth param
+squid_auth_param_secret: ""
+squid_auth_param: {}
+#  - {name: 'basic', type: 'program', value: '/usr/lib/squid/basic_ldap_auth
+#    -v 3
+#    -b "dc=exemple,dc=fr"
+#    -D "cn=squid,ou=services,dc=exemple,dc=fr"
+#    -W /etc/squid/ldap.secret
+#    -f "(&(objectClass=person)(sAMAccountName=%s))"
+#    ldap1.int.exemple.fr'}
+#  - {name: 'basic', type: 'realm', value: 'Proxy Squid LDAP'}
+#  - {name: 'basic', type: 'credentialsttl', value: '4 hours'}
+#  - {name: 'basic', type: 'casesensitive', value: 'off'}
+
 ### acls
-squid_acls:
-  - {name: 'manager', type: 'proto', value: 'cache_object'}
-  - {name: 'vms', type: 'src', value: '10.64.32.0/19'}
-  - {name: 'SSL_ports', type: 'port', value: '443'}
-  - {name: 'Safe_ports', type: 'port', value: '1025-65535', comment: 'unregistered ports'}
-  - {name: 'whitelist', type: 'dst', value: '"/opt/whitelist_urls.txt"', comment: 'urls autorise'}
-  - {name: 'snmppublic', type: 'snmp_community', value: 'public'}
-  - {name: 'FTP', type: 'proto', value: 'FTP'}
-  - {name: 'CONNECT', type: 'method', value: 'CONNECT'}
+squid_external_acl_type: ""
+#  external_acl_type ldap_group %LOGIN \
+#  /usr/lib/squid/ext_ldap_group_acl \
+#  -v 3 \
+#  -b "dc=exemple,dc=fr" \
+#  -D "cn=squid,ou=services,dc=exemple,dc=fr" \
+#  -W /etc/squid/ldap.secret \
+#  -f "(&(objectClass=group)(cn=%g)(member=%u))" \
+#  ldap1.int.exemple.fr
+
+squid_acls: {}
+#  - {name: 'snmppublic', type: 'snmp_community', value: 'public'}
+#  - {name: 'SSL_ports', type: 'port', value: '443'}
+#  - {name: 'FTP', type: 'proto', value: 'FTP'}
+#  - {name: 'grp_sites_toto', type: 'external', value: 'ldap_group sites_toto'}
+#  - {name: 'sites_toto', type: 'dstdomain', value: '.github.com'}
+#  - {name: 'Safe_ports', type: 'port', value: '1025-65535', comment: 'unregistered ports'}
+#  - {name: 'CONNECT', type: 'method', value: 'CONNECT'}
+#  - {name: 'authenticated', type: 'proxy_auth', value: 'REQUIRED'}
+#  - {name: 'vms', type: 'src', value: '10.64.32.0/19'}
 
 ### access
-squid_http_access:
-  - {access: 'deny', type: 'CONNECT', scope: '!SSL_ports'}
-squid_always_direct:
-  - {access: 'allow', value: 'FTP'}
+squid_http_access: {}
+#  - {access: 'deny', type: 'CONNECT', scope: '!SSL_ports'}
+squid_always_direct: {}
+#  - {access: 'allow', value: 'FTP'}
 squid_deny_info: ""
 
 ### Cache
@@ -51,7 +76,7 @@ squid_cache_dir: "ufs /var/spool/squid 10240 16 256"
 squid_cache_replacement_policy: ""
 
 ### Snmp
-squid_snmp_enable: true
+squid_snmp_enable: false
 squid_snmp_port: 3401
 squid_snmp_community: localhost
 squid_snmp_incoming_address: 127.0.0.1

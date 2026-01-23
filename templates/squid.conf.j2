@@ -65,16 +65,30 @@ negative_ttl {{ squid_negative_ttl }}
 forwarded_for {{ squid_forwarded_for }}
 {% endif %}
 
+{% if squid_auth_param is defined and squid_auth_param | length > 0 %}
 #############################################################
-# DEFINE ACLS
-
-{% for item in squid_acls %}
-acl {{ item.name }} {{ item.type }} {{ item.value }} #{{item.comment | default("") }}
+# DEFINE AUTHENTICATION (USERS)
+#
+{% for item in squid_auth_param %}
+auth_param {{ item.name }} {{ item.type }} {{ item.value }} # {{ item.comment | default("") }}
 {% endfor %}
 
+{% endif %}
+{% if squid_acls is defined and squid_acls | length > 0 %}
 #############################################################
-# DEFINE HTTP ACCESS RULES
+# DEFINE GROUP ACLS
+#
+{% if squid_external_acl_type is defined and squid_external_acl_type | length > 0 %}
+{{ squid_external_acl_type }}
+{% endif %}
+{% for item in squid_acls %}
+acl {{ item.name }} {{ item.type }} {{ item.value }} # {{ item.comment | default("") }}
+{% endfor %}
 
+{% endif %}
+#############################################################
+# DEFINE HTTP ACCESS RULES (ORDER IS CRITICAL)
+#
 {% for item in squid_http_access %}
 http_access {{ item.access }} {{ item.type | default("") }} {{ item.scope }}
 {% endfor %}
@@ -84,13 +98,16 @@ always_direct {{ item.access }} {{ item.value }}
 {% endfor %}
 
 {% if squid_deny_info is defined and squid_deny_info | length > 0 %}
+#############################################################
+# CUSTOM DENY PAGE (OPTIONAL)
+#
 deny_info {{ squid_deny_info }}
 {% endif %}
 
 {% if squid_cache_enable is defined and squid_cache_enable is sameas true %}
 #############################################################
 # DEFINE CACHE
-
+#
 cache_dir {{ squid_cache_dir }}
 {% if squid_cache_replacement_policy is defined and squid_cache_replacement_policy | length > 0 %}
 cache_replacement_policy {{ squid_cache_replacement_policy }}
@@ -99,7 +116,7 @@ cache_replacement_policy {{ squid_cache_replacement_policy }}
 
 #############################################################
 # DEFINE REFRESH
-
+#
 refresh_pattern ^ftp:		1440	20%	10080
 refresh_pattern ^gopher:	1440	0%	1440
 refresh_pattern -i (/cgi-bin/|\?) 0	0%	0
@@ -108,6 +125,7 @@ refresh_pattern .		0	20%	1440
 {% if squid_snmp_enable is defined and squid_snmp_enable is sameas true %}
 #############################################################
 # DEFINE SNMP
+#
 snmp_port {{ squid_snmp_port }}
 snmp_access allow snmppublic {{ squid_snmp_community }}
 snmp_access deny all
